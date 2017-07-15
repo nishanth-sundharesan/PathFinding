@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Point.cpp" />
+    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="Graph.cpp" />
+    <ClCompile Include="GridHelper.cpp" />
+    <ClCompile Include="Utility.cpp" />
+    <ClCompile Include="IPathFinder.cpp">
+      <Filter>Search Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="StopWatch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Point.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="Graph.h" />
+    <ClInclude Include="GridHelper.h" />
+    <ClInclude Include="Utility.h" />
+    <ClInclude Include="IPathFinder.h">
+      <Filter>Search Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="StopWatch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Point.inl" />
+    <None Include="Node.inl" />
+    <None Include="Graph.inl" />
+    <None Include="StopWatch.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Search Algorithms">
+      <UniqueIdentifier>{c8ee52ad-adaa-4702-964e-e7ed81940a7c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
