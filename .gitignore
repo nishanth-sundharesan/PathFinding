@@ -1,0 +1,9 @@
+Build/Pathfinding.VC.db
+Build/Pathfinding.VC.VC.opendb
+Build/.vs/Pathfinding/v14/.suo
+Build/ipch/
+Source/Pathfinding.ConsoleApplication/obj/
+Source/Pathfinding.Library.Cli/obj/
+Source/Pathfinding.Library/obj/
+Source/Pathfinding.Library.Cli/bin/
+Source/Pathfinding.Library/bin/
