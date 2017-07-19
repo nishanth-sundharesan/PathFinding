@@ -1,70 +1,53 @@
 #include "pch.h"
 #include "GreedyBestFirst.h"
+#include "PathFindingHelper.h"
 
 using namespace std;
 
 namespace Library
 {
-	deque<shared_ptr<Node>> GreedyBestFirst::FindPath(shared_ptr<Node> start, shared_ptr<Node> end, set<shared_ptr<Node>>& closedSet)
+	GreedyBestFirst::GreedyBestFirst()
+		:mHeuristicFunction(PathFindingHelper::ManhattanHeuristic)
 	{
-		UNREFERENCED_PARAMETER(closedSet);
+	}
 
+	deque<shared_ptr<Node>> GreedyBestFirst::FindPath(shared_ptr<Node> start, shared_ptr<Node> end, uint32_t& numberOfNodesVisited)
+	{
 		deque<shared_ptr<Node>> frontierQueue;
 		start->SetParent(start);
-		start->SetHeuristic(CalculateHeuristic(start, end));
-		frontierQueue.push_back(start);
+		start->SetHeuristic(mHeuristicFunction(start, end));
+		frontierQueue.push_back(start);		
 
-		shared_ptr<Node> endNode(nullptr);
-
-		//Change it to do while
 		while (!frontierQueue.empty())
 		{
 			shared_ptr<Node> currentNode = GetNodeWithLowHeuristic(frontierQueue);
-			const vector<weak_ptr<Node>>& neighbours = currentNode->Neighbors();
-
-			for (const weak_ptr<Node>& node : neighbours)
+			if (currentNode == end)
 			{
-				if (auto nodeSharedPtr = node.lock())
+				return PathFindingHelper::CalculatePathNodes(start, currentNode);
+			}
+			
+			for (const weak_ptr<Node>& node : currentNode->Neighbors())
+			{
+				std::shared_ptr<Node> neighbor;
+				if ((neighbor = node.lock()) && neighbor->Parent().expired())
 				{
-					if (nodeSharedPtr->Parent().expired())
-					{
-						nodeSharedPtr->SetParent(currentNode);
-						if (nodeSharedPtr == end)
-						{
-							endNode = nodeSharedPtr;
-							frontierQueue.clear();
-							break;
-						}
-						nodeSharedPtr->SetHeuristic(CalculateHeuristic(nodeSharedPtr, end));
-						frontierQueue.push_back(nodeSharedPtr);
-					}
+					neighbor->SetParent(currentNode);
+
+					neighbor->SetHeuristic(mHeuristicFunction(neighbor, end));
+					frontierQueue.push_back(neighbor);
+
+					++numberOfNodesVisited;
 				}
 			}
 		}
 
-		if (endNode)
-		{
-			while (endNode->Parent().lock() != start)
-			{
-				endNode = endNode->Parent().lock();
-				frontierQueue.push_front(endNode);
-			}
-		}
-		else
-		{
-			frontierQueue.clear();
-		}
-
+		frontierQueue.clear();
 		return frontierQueue;
 	}
 
-	/*float GreedyBestFirst::CalculateHeuristic(shared_ptr<Node> currentNode, shared_ptr<Node> endNode)
-	{
-		return static_cast<float>(abs(currentNode->Location().X() - endNode->Location().X()) + abs(currentNode->Location().Y() - endNode->Location().Y()));
-	}*/
-
 	shared_ptr<Node> GreedyBestFirst::GetNodeWithLowHeuristic(deque<shared_ptr<Node>>& frontierQueue)
 	{
+		//TODO change this to priority queue data structure
 		deque<shared_ptr<Node>>::iterator nodeToRemove = frontierQueue.begin();
 		shared_ptr<Node> lowestHeuristicNode = *nodeToRemove;
 
