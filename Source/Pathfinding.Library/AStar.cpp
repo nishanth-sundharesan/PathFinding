@@ -1,85 +1,73 @@
 #include "pch.h"
 #include "AStar.h"
+#include <set>
 
 using namespace std;
 
 namespace Library
 {
-	const float AStar::sPathCost = 0.0f;
-
-	deque<shared_ptr<Node>> AStar::FindPath(shared_ptr<Node> start, shared_ptr<Node> end, set<shared_ptr<Node>>& closedSet)
+	AStar::AStar(PathFindingHelper::HeuristicFunction heuristicFunction)
+		:mHeuristicFunction(heuristicFunction)
 	{
-		UNREFERENCED_PARAMETER(closedSet);
+	}
 
+	deque<shared_ptr<Node>> AStar::FindPath(shared_ptr<Node> start, shared_ptr<Node> end, uint32_t& numberOfNodesVisited)
+	{
 		deque<shared_ptr<Node>> frontierQueue;
+		set<shared_ptr<Node>> closedSet;
+
 		start->SetParent(start);
-		start->SetHeuristic(CalculateHeuristic(start, end));
+		start->SetHeuristic(mHeuristicFunction(start, end));
 		frontierQueue.push_back(start);
 
-		shared_ptr<Node> endNode(nullptr);
+		shared_ptr<Node> currentNode;
 
-		//Change it to do while
 		while (!frontierQueue.empty())
 		{
-			shared_ptr<Node> currentNode = GetNodeWithLowestTotalCost(frontierQueue);
-			const vector<weak_ptr<Node>>& neighbours = currentNode->Neighbors();
-
-			for (const weak_ptr<Node>& node : neighbours)
+			currentNode = GetNodeWithLowestTotalCost(frontierQueue);
+			if (currentNode == end)
 			{
-				if (auto nodeSharedPtr = node.lock())
-				{
-					if (!nodeSharedPtr->IsInClosedSet())
-					{
-						if (nodeSharedPtr == end)
-						{
-							nodeSharedPtr->SetParent(currentNode);
-							endNode = nodeSharedPtr;
-							frontierQueue.clear();
-							break;
-						}
+				return PathFindingHelper::CalculatePathNodes(start, currentNode);
+			}
+			closedSet.insert(currentNode);
 
-						//If path cost existed, then it would be calculated here.
-						//Calculate path cost for the neighbor
+			for (const weak_ptr<Node>& node : currentNode->Neighbors())
+			{
+				if (auto neighbor = node.lock())
+				{
+					if (closedSet.find(neighbor) == closedSet.end())
+					{
 						float pathCost = currentNode->PathCost() + 1;
-						if (find(frontierQueue.begin(), frontierQueue.end(), nodeSharedPtr) != frontierQueue.end())
+
+						if (find(frontierQueue.begin(), frontierQueue.end(), neighbor) != frontierQueue.end())
 						{
-							if (pathCost < nodeSharedPtr->PathCost())
+							if (pathCost < neighbor->PathCost())
 							{
-								nodeSharedPtr->SetParent(currentNode);
-								nodeSharedPtr->SetPathCost(pathCost);
+								neighbor->SetParent(currentNode);
+								neighbor->SetPathCost(pathCost);
 							}
 						}
 						else
 						{
-							nodeSharedPtr->SetHeuristic(CalculateHeuristic(nodeSharedPtr, end));
-							nodeSharedPtr->SetParent(currentNode);
-							nodeSharedPtr->SetPathCost(pathCost);
-							frontierQueue.push_back(nodeSharedPtr);
+							neighbor->SetHeuristic(mHeuristicFunction(neighbor, end));
+							neighbor->SetParent(currentNode);
+							neighbor->SetPathCost(pathCost);
+							frontierQueue.push_back(neighbor);
 
-							currentNode->SetIsInClosetSet(true);
+							++numberOfNodesVisited;
 						}
 					}
 				}
-			}
-		}
-		if (endNode)
-		{
-			while (endNode->Parent().lock() != start)
-			{
-				endNode = endNode->Parent().lock();
-				frontierQueue.push_front(endNode);
-			}
-		}
-		else
-		{
-			frontierQueue.clear();
-		}
+			}			
+		} 
 
-		return frontierQueue;		
+		frontierQueue.clear();
+		return frontierQueue;
 	}
 
 	shared_ptr<Node> AStar::GetNodeWithLowestTotalCost(deque<shared_ptr<Node>>& frontierQueue)
 	{
+		//TODO change this to priority queue data structure
 		deque<shared_ptr<Node>>::iterator nodeToRemove = frontierQueue.begin();
 		shared_ptr<Node> lowestTotalCostNode = *nodeToRemove;
 
@@ -91,7 +79,7 @@ namespace Library
 				nodeToRemove = it;
 			}
 		}
-		
+
 		frontierQueue.erase(nodeToRemove);
 		return lowestTotalCostNode;
 	}

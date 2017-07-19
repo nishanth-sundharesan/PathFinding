@@ -1,18 +1,24 @@
 #pragma once
 #include "IPathFinder.h"
+#include "PathFindingHelper.h"
 
 namespace Library
 {
-	class AStar final : public IPathFinder
+	class AStar : public IPathFinder
 	{
 	public:
-		AStar() = default;
-		~AStar() = default;
+		AStar(PathFindingHelper::HeuristicFunction heuristicFunction);
+		AStar(const AStar&) = delete;
+		AStar& operator=(const AStar&) = delete;
+		AStar(const AStar&&) = delete;
+		AStar& operator=(AStar&&) = delete;
+		virtual ~AStar() = default;
+		virtual std::deque<std::shared_ptr<Node>> FindPath(std::shared_ptr<Node> start, std::shared_ptr<Node> end, std::uint32_t& numberOfNodesVisited) override;
 
-		virtual std::deque<std::shared_ptr<Node>> FindPath(std::shared_ptr<Node> start, std::shared_ptr<Node> end, std::set<std::shared_ptr<Node>>& closedSet) override;
+	protected:
+		PathFindingHelper::HeuristicFunction mHeuristicFunction;
+
 	private:
-		std::shared_ptr<Node> GetNodeWithLowestTotalCost(std::deque<std::shared_ptr<Node>>& frontierQueue);
-
-		static const float sPathCost;
+		std::shared_ptr<Node> GetNodeWithLowestTotalCost(std::deque<std::shared_ptr<Node>>& frontierQueue);		
 	};
 }
