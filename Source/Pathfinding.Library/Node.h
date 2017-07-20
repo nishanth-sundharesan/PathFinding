@@ -44,7 +44,7 @@ namespace Library
 		std::weak_ptr<Node> Parent() const;
 		void SetParent(std::shared_ptr<Node> parent);
 
-		void Reset();
+		void Reset();				
 
 	private:
 		GUID mID;
@@ -52,7 +52,7 @@ namespace Library
 		Point mLocation;
 		float mHeuristic;
 		float mPathCost;
-		float mTotalCost;
+		float mTotalCost;		
 		std::vector<std::weak_ptr<Node>> mNeighbors;
 		std::weak_ptr<Node> mParent;
 	};

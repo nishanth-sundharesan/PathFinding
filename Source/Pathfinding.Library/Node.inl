@@ -17,7 +17,7 @@ namespace Library
 		return !operator==(rhs);
 	}
 
-	inline const GUID & Node::ID() const
+	inline const GUID& Node::ID() const
 	{
 		return mID;
 	}
@@ -88,6 +88,7 @@ namespace Library
 	inline void Node::Reset()
 	{
 		mHeuristic = 0.0f;
-		mPathCost = 0.0f;
-	}
+		mPathCost = 0.0f;	
+		mParent.reset();		
+	}	
 }
