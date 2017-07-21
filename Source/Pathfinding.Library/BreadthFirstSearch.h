@@ -7,8 +7,12 @@ namespace Library
 	{
 	public:
 		BreadthFirstSearch() = default;
+		BreadthFirstSearch(const BreadthFirstSearch&) = delete;
+		BreadthFirstSearch& operator=(const BreadthFirstSearch&) = delete;
+		BreadthFirstSearch(const BreadthFirstSearch&&) = delete;
+		BreadthFirstSearch& operator=(BreadthFirstSearch&&) = delete;
 		~BreadthFirstSearch() = default;
 
-		virtual std::deque<std::shared_ptr<Node>> FindPath(std::shared_ptr<Node> start, std::shared_ptr<Node> end, std::set<std::shared_ptr<Node>>& closedSet) override;
+		virtual std::deque<std::shared_ptr<Node>> FindPath(std::shared_ptr<Node> start, std::shared_ptr<Node> end, std::uint32_t& numberOfNodesVisited) override;
 	};
 }

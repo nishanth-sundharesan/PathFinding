@@ -1,59 +1,40 @@
 #include "pch.h"
 #include "BreadthFirstSearch.h"
+#include "PathFindingHelper.h"
 
 using namespace std;
 
 namespace Library
 {
-	deque<shared_ptr<Node>> BreadthFirstSearch::FindPath(shared_ptr<Node> start, shared_ptr<Node> end, set<shared_ptr<Node>>& closedSet)
+	deque<shared_ptr<Node>> BreadthFirstSearch::FindPath(shared_ptr<Node> start, shared_ptr<Node> end, uint32_t& numberOfNodesVisited)
 	{
-		UNREFERENCED_PARAMETER(closedSet);
-
-		deque<shared_ptr<Node>> frontierQueue;
-		start->SetParent(start);
+		deque<shared_ptr<Node>> frontierQueue;		
 		frontierQueue.push_back(start);
-
-		shared_ptr<Node> endNode(nullptr);
-
-		//Change it to do while
+				
 		while (!frontierQueue.empty())
 		{
 			shared_ptr<Node> currentNode = frontierQueue.front();
-			const std::vector<std::weak_ptr<Node>>& neighbours = currentNode->Neighbors();
 			frontierQueue.pop_front();
 
-			for (const std::weak_ptr<Node>& node : neighbours)
+			if (currentNode == end)
 			{
-				if (auto nodeSharedPtr = node.lock())
-				{
-					if (nodeSharedPtr->Parent().expired())
-					{
-						nodeSharedPtr->SetParent(currentNode);
-						if (nodeSharedPtr == end)
-						{
-							endNode = nodeSharedPtr;
-							frontierQueue.clear();
-							break;
-						}
-						frontierQueue.push_back(nodeSharedPtr);
-					}
+				return PathFindingHelper::CalculatePathNodes(start, currentNode);
+			}
+			
+			for (const weak_ptr<Node>& node : currentNode->Neighbors())
+			{
+				shared_ptr<Node> neighbor;
+				if ((neighbor = node.lock()) && neighbor->Parent().expired())
+				{					
+					neighbor->SetParent(currentNode);					
+					frontierQueue.push_back(neighbor);
+
+					++numberOfNodesVisited;
 				}
-			}			
+			}
 		}
 
-		if (endNode)
-		{
-			while (endNode->Parent().lock() != start)
-			{
-				endNode = endNode->Parent().lock();
-				frontierQueue.push_front(endNode);
-			}			
-		}
-		else
-		{
-			frontierQueue.clear();
-		}
-
+		frontierQueue.clear();
 		return frontierQueue;
 	}
 }
