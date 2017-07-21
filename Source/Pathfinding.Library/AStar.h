@@ -16,9 +16,6 @@ namespace Library
 		virtual std::deque<std::shared_ptr<Node>> FindPath(std::shared_ptr<Node> start, std::shared_ptr<Node> end, std::uint32_t& numberOfNodesVisited) override;
 
 	protected:
-		PathFindingHelper::HeuristicFunction mHeuristicFunction;
-
-	private:
-		std::shared_ptr<Node> GetNodeWithLowestTotalCost(std::deque<std::shared_ptr<Node>>& frontierQueue);		
+		PathFindingHelper::HeuristicFunction mHeuristicFunction;			
 	};
 }

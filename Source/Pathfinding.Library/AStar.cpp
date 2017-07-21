@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "AStar.h"
-#include <set>
 
 using namespace std;
 
@@ -13,22 +12,30 @@ namespace Library
 
 	deque<shared_ptr<Node>> AStar::FindPath(shared_ptr<Node> start, shared_ptr<Node> end, uint32_t& numberOfNodesVisited)
 	{
-		deque<shared_ptr<Node>> frontierQueue;
+		unordered_set<shared_ptr<Node>> frontierQueueLookup;
+		struct NodeWithHighTotalCost
+		{
+			bool operator()(const shared_ptr<Node>& lhs, const shared_ptr<Node>& rhs) const
+			{
+				return lhs->TotalCost() > rhs->TotalCost();
+			}
+		};
+		priority_queue<shared_ptr<Node>, vector<shared_ptr<Node>>, NodeWithHighTotalCost> frontierQueue;		
 		set<shared_ptr<Node>> closedSet;
-
-		start->SetParent(start);
-		start->SetHeuristic(mHeuristicFunction(start, end));
-		frontierQueue.push_back(start);
-
-		shared_ptr<Node> currentNode;
-
+		
+		start->SetHeuristic(mHeuristicFunction(start, end));		
+		frontierQueue.push(start);
+		frontierQueueLookup.insert(start);
+		
 		while (!frontierQueue.empty())
 		{
-			currentNode = GetNodeWithLowestTotalCost(frontierQueue);
+			shared_ptr<Node> currentNode = frontierQueue.top();
 			if (currentNode == end)
 			{
 				return PathFindingHelper::CalculatePathNodes(start, currentNode);
 			}
+			frontierQueue.pop();
+			frontierQueueLookup.erase(currentNode);			
 			closedSet.insert(currentNode);
 
 			for (const weak_ptr<Node>& node : currentNode->Neighbors())
@@ -39,7 +46,7 @@ namespace Library
 					{
 						float pathCost = currentNode->PathCost() + 1;
 
-						if (find(frontierQueue.begin(), frontierQueue.end(), neighbor) != frontierQueue.end())
+						if (frontierQueueLookup.find(neighbor) != frontierQueueLookup.end())
 						{
 							if (pathCost < neighbor->PathCost())
 							{
@@ -52,7 +59,8 @@ namespace Library
 							neighbor->SetHeuristic(mHeuristicFunction(neighbor, end));
 							neighbor->SetParent(currentNode);
 							neighbor->SetPathCost(pathCost);
-							frontierQueue.push_back(neighbor);
+							frontierQueue.push(neighbor);
+							frontierQueueLookup.insert(neighbor);
 
 							++numberOfNodesVisited;
 						}
@@ -60,27 +68,7 @@ namespace Library
 				}
 			}			
 		} 
-
-		frontierQueue.clear();
-		return frontierQueue;
-	}
-
-	shared_ptr<Node> AStar::GetNodeWithLowestTotalCost(deque<shared_ptr<Node>>& frontierQueue)
-	{
-		//TODO change this to priority queue data structure
-		deque<shared_ptr<Node>>::iterator nodeToRemove = frontierQueue.begin();
-		shared_ptr<Node> lowestTotalCostNode = *nodeToRemove;
-
-		for (auto it = frontierQueue.begin(); it != frontierQueue.end(); ++it)
-		{
-			if ((*it)->TotalCost() < lowestTotalCostNode->TotalCost())
-			{
-				lowestTotalCostNode = *it;
-				nodeToRemove = it;
-			}
-		}
-
-		frontierQueue.erase(nodeToRemove);
-		return lowestTotalCostNode;
-	}
+		
+		return deque<shared_ptr<Node>>();
+	}	
 }
