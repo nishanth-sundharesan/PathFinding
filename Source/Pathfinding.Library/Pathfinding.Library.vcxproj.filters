@@ -7,10 +7,20 @@
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="GridHelper.cpp" />
     <ClCompile Include="Utility.cpp" />
-    <ClCompile Include="IPathFinder.cpp">
+    <ClCompile Include="StopWatch.cpp" />
+    <ClCompile Include="BreadthFirstSearch.cpp">
       <Filter>Search Algorithms</Filter>
     </ClCompile>
-    <ClCompile Include="StopWatch.cpp" />
+    <ClCompile Include="AStar.cpp">
+      <Filter>Search Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="GreedyBestFirst.cpp">
+      <Filter>Search Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="Dijkstra.cpp">
+      <Filter>Search Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="PathFindingHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -23,6 +33,19 @@
       <Filter>Search Algorithms</Filter>
     </ClInclude>
     <ClInclude Include="StopWatch.h" />
+    <ClInclude Include="BreadthFirstSearch.h">
+      <Filter>Search Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="GreedyBestFirst.h">
+      <Filter>Search Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="AStar.h">
+      <Filter>Search Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="Dijkstra.h">
+      <Filter>Search Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="PathFindingHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Point.inl" />
