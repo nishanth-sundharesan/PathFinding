@@ -88,8 +88,13 @@ namespace Library
 		return graph;
 	}
 
-	bool GridHelper::IsValidGridLocation(const Point& location, int maxWidth, int maxLength)
+	bool GridHelper::IsValidGridLocation(const Point& location, int32_t maxWidth, int32_t maxLength)
 	{
 		return (location.X() >= 0 && location.X() < maxWidth) && (location.Y() >= 0 && location.Y() < maxLength);
+	}
+
+	bool GridHelper::IsValidGridLocation(int32_t xPosition, int32_t yPosition, int32_t maxWidth, int32_t maxLength)
+	{
+		return (xPosition >= 0 && xPosition < maxWidth) && (yPosition >= 0 && yPosition < maxLength);
 	}
 }
